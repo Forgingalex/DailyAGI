@@ -1,6 +1,6 @@
 # DAILYAGI - Decentralized AI Life Assistant
 
-A full-stack decentralized web application built with **Sentient's AGI tools** (Dobby, ROMA, Enclaves, OML) that helps users manage reminders, analyze spending, and organize groceries — all with encrypted data stored on IPFS and owned by the user.
+A full-stack decentralized web application built with **Sentient's AGI tools** (Dobby, ROMA, Enclaves, OML) that helps users manage reminders, analyze spending, and organize groceries, all with encrypted data stored on IPFS and owned by the user.
 
 ![DAILYAGI](https://img.shields.io/badge/DAILYAGI-v1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -201,7 +201,7 @@ MIT License - see LICENSE file for details
 
 For issues and questions:
 - GitHub Issues: [https://github.com/Forgingalex/DailyAGI/issues](https://github.com/Forgingalex/DailyAGI/issues)
-- Email: [Your Email]
+- Email: [olaiyaalexander97@gmail.com]
 
 ## 🗺️ Roadmap
 
