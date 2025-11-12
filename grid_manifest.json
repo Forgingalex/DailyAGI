@@ -1,0 +1,46 @@
+{
+  "project_name": "DAILYAGI",
+  "description": "A decentralized AI life assistant built with Sentient ROMA and Dobby. It handles reminders, spending nudges, and grocery lists, all stored on IPFS and executed privately via Enclaves.",
+  "author": "Hosea Adetunji",
+  "category": "AI Agents",
+  "language": ["TypeScript", "Python"],
+  "blockchain": ["Polygon", "Base"],
+  "agents": [
+    {
+      "name": "RemindersAgent",
+      "purpose": "Send calendar-based reminders via SMS",
+      "dependencies": ["google-api-python-client", "twilio", "web3-storage"],
+      "oml_fingerprint": "dailyagi_reminders_v1_0xabcdef1234567890"
+    },
+    {
+      "name": "SpendingAgent",
+      "purpose": "Analyze on-chain transactions and nudge users on overspending",
+      "dependencies": ["requests", "transformers", "roma-sentient"],
+      "oml_fingerprint": "dailyagi_spending_v1_0x7890abcdef123456"
+    },
+    {
+      "name": "GroceryAgent",
+      "purpose": "Use vision to detect missing grocery items and create IPFS lists",
+      "dependencies": ["exa", "web3-storage", "roma-sentient"],
+      "oml_fingerprint": "dailyagi_grocery_v1_0x4567890abcdef123"
+    }
+  ],
+  "deployment": {
+    "frontend": "Vercel",
+    "backend": "Render",
+    "storage": "IPFS",
+    "enclave": "Sentient Enclave (mock)"
+  },
+  "monetization": {
+    "token": "SENT",
+    "model": "Freemium",
+    "premium_price": "0.01 SENT/month",
+    "royalty": "0.05%"
+  },
+  "repository": "https://github.com/Forgingalex/DailyAGI.git",
+  "license": "MIT",
+  "version": "1.0.0",
+  "created_at": "2025-01-27T00:00:00Z"
+}
+
+
