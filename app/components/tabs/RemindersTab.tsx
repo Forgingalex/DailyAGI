@@ -86,22 +86,25 @@ export function RemindersTab({ address }: RemindersTabProps) {
   }
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-white">Your Reminders</h3>
+        <h3 className="text-2xl font-bold bg-gradient-to-r from-pink-300 to-rose-300 bg-clip-text text-transparent">
+          Your Reminders
+        </h3>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-sentient-600 hover:bg-sentient-700 rounded-lg text-white font-medium transition-colors"
+          className="group relative flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-xl text-white font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-pink-500/30 hover:scale-105 active:scale-95 overflow-hidden"
         >
-          <Plus className="w-5 h-5" />
-          Add Reminder
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-400/0 via-white/20 to-rose-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+          <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300 relative z-10" />
+          <span className="relative z-10">Add Reminder</span>
         </button>
       </div>
 
       {showForm && (
         <form
           onSubmit={createReminder}
-          className="mb-6 p-4 bg-sentient-700/50 rounded-lg border border-sentient-600"
+          className="mb-6 p-6 bg-pink-900/20 backdrop-blur-xl rounded-2xl border border-pink-800/50 shadow-lg animate-fade-in-up"
         >
           <div className="space-y-4">
             <input
@@ -111,7 +114,7 @@ export function RemindersTab({ address }: RemindersTabProps) {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="w-full px-4 py-2 bg-sentient-800 border border-sentient-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sentient-500"
+              className="w-full px-4 py-3 bg-pink-950/40 border border-pink-800/50 rounded-xl text-pink-100 placeholder-pink-400/50 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all backdrop-blur-sm"
               required
             />
             <textarea
@@ -120,7 +123,7 @@ export function RemindersTab({ address }: RemindersTabProps) {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="w-full px-4 py-2 bg-sentient-800 border border-sentient-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sentient-500"
+              className="w-full px-4 py-3 bg-pink-950/40 border border-pink-800/50 rounded-xl text-pink-100 placeholder-pink-400/50 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all backdrop-blur-sm resize-none"
               rows={3}
             />
             <input
@@ -129,21 +132,21 @@ export function RemindersTab({ address }: RemindersTabProps) {
               onChange={(e) =>
                 setFormData({ ...formData, datetime: e.target.value })
               }
-              className="w-full px-4 py-2 bg-sentient-800 border border-sentient-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sentient-500"
+              className="w-full px-4 py-3 bg-pink-950/40 border border-pink-800/50 rounded-xl text-pink-100 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all backdrop-blur-sm"
               required
             />
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 bg-sentient-600 hover:bg-sentient-700 rounded-lg text-white font-medium transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-xl text-white font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 shadow-lg hover:shadow-pink-500/30"
               >
                 {loading ? 'Creating...' : 'Create'}
               </button>
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="px-4 py-2 bg-sentient-600 hover:bg-sentient-700 rounded-lg text-white font-medium transition-colors"
+                className="px-4 py-2.5 bg-pink-900/40 hover:bg-pink-800/60 rounded-xl text-pink-200 font-medium transition-all duration-300 border border-pink-800/50 hover:scale-105 active:scale-95"
               >
                 Cancel
               </button>
@@ -153,44 +156,54 @@ export function RemindersTab({ address }: RemindersTabProps) {
       )}
 
       {loading && !showForm ? (
-        <div className="text-center py-8 text-gray-400">Loading reminders...</div>
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mb-4"></div>
+          <p className="text-pink-300/60">Loading reminders...</p>
+        </div>
       ) : reminders.length === 0 ? (
-        <div className="text-center py-8 text-gray-400">
-          No reminders yet. Create one to get started!
+        <div className="text-center py-12 bg-pink-900/10 rounded-2xl border border-pink-800/30">
+          <Calendar className="w-12 h-12 text-pink-400/50 mx-auto mb-4" />
+          <p className="text-pink-300/60">
+            No reminders yet. Create one to get started!
+          </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {reminders.map((reminder) => (
+        <div className="space-y-4">
+          {reminders.map((reminder, index) => (
             <div
               key={reminder.id}
-              className="p-4 bg-sentient-700/50 rounded-lg border border-sentient-600 hover:border-gray-500 transition-colors"
+              className="group p-5 bg-pink-900/20 backdrop-blur-xl rounded-xl border border-pink-800/50 hover:border-pink-700/70 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/20 hover:scale-[1.02] animate-fade-in-up hover-lift relative overflow-hidden"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="flex justify-between items-start">
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-500/0 via-rose-500/5 to-fuchsia-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="flex justify-between items-start relative z-10">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <Calendar className="w-5 h-5 text-sentient-400" />
-                    <h4 className="font-semibold text-white">{reminder.title}</h4>
+                    <div className="p-2 bg-pink-500/20 rounded-lg">
+                      <Calendar className="w-5 h-5 text-pink-400" />
+                    </div>
+                    <h4 className="font-semibold text-pink-100 text-lg">{reminder.title}</h4>
                   </div>
                   {reminder.description && (
-                    <p className="text-gray-300 text-sm mb-2 ml-8">
+                    <p className="text-pink-200/70 text-sm mb-3 ml-12">
                       {reminder.description}
                     </p>
                   )}
-                  <div className="flex items-center gap-2 text-sm text-gray-400 ml-8">
+                  <div className="flex items-center gap-2 text-sm text-pink-300/60 ml-12">
                     <Clock className="w-4 h-4" />
                     <span>
                       {format(new Date(reminder.datetime), 'PPp')}
                     </span>
                   </div>
                   {reminder.cid && (
-                    <div className="mt-2 text-xs text-gray-500 ml-8">
+                    <div className="mt-2 text-xs text-pink-400/50 ml-12 font-mono">
                       IPFS: {reminder.cid.slice(0, 20)}...
                     </div>
                   )}
                 </div>
                 <button
                   onClick={() => deleteReminder(reminder.id)}
-                  className="p-2 hover:bg-gray-600 rounded-lg transition-colors"
+                  className="p-2 hover:bg-pink-800/40 rounded-lg transition-all duration-200 hover:scale-110 hover:rotate-12"
                 >
                   <Trash2 className="w-5 h-5 text-red-400" />
                 </button>

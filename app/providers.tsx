@@ -13,15 +13,19 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark')
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
-    const savedTheme = localStorage.getItem('theme') as Theme
-    if (savedTheme) {
-      setTheme(savedTheme)
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark')
-    } else {
+    // Set theme on mount
+    try {
+      const savedTheme = localStorage.getItem('theme') as Theme
+      if (savedTheme) {
+        setTheme(savedTheme)
+        document.documentElement.classList.toggle('dark', savedTheme === 'dark')
+      } else {
+        document.documentElement.classList.add('dark')
+      }
+    } catch (e) {
+      // If localStorage fails, just use dark theme
       document.documentElement.classList.add('dark')
     }
   }, [])
@@ -29,12 +33,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark'
     setTheme(newTheme)
-    localStorage.setItem('theme', newTheme)
+    try {
+      localStorage.setItem('theme', newTheme)
+    } catch (e) {
+      // Ignore localStorage errors
+    }
     document.documentElement.classList.toggle('dark', newTheme === 'dark')
-  }
-
-  if (!mounted) {
-    return <>{children}</>
   }
 
   return (
