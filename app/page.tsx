@@ -2,159 +2,315 @@
 
 import { WalletButton } from './components/WalletButton'
 import { Dashboard } from './components/Dashboard'
-import { ParticleBackground } from './components/ParticleBackground'
+import { FloatingParticles } from './components/FloatingParticles'
+import { WaterGlassIcon } from './components/WaterGlassIcon'
+import { Navbar } from './components/Navbar'
+import { DemoBanner } from './components/DemoBanner'
+import { ChatModal } from './components/ChatModal'
 import { useWallet } from './hooks/useWallet'
 import { useTheme } from './providers'
-import { Moon, Sun, Sparkles, Eye, Bell, DollarSign, ShoppingCart } from 'lucide-react'
-import { useState } from 'react'
+import { Sparkles, MessageCircle, ExternalLink, Bell, DollarSign, ShoppingCart } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import Link from 'next/link'
 
 export default function Home() {
   const { isConnected, address, ensName, avatar } = useWallet()
   const { theme, toggleTheme } = useTheme()
   const [demoMode, setDemoMode] = useState(false)
+  const [chatModalOpen, setChatModalOpen] = useState(false)
 
-  // Use demo mode if not connected, or show real dashboard if connected
-  const showDashboard = isConnected || demoMode
+  // Show dashboard if connected, has address, or in demo mode
+  const showDashboard = (isConnected || address) || demoMode
   const demoAddress = demoMode ? '0x1234567890123456789012345678901234567890' : address
+  
+  // Debug logging in useEffect to avoid render issues
+  useEffect(() => {
+    console.log('Dashboard state:', { 
+      isConnected, 
+      address, 
+      showDashboard, 
+      demoMode,
+      hasAddress: !!address,
+      localStorage: typeof window !== 'undefined' ? localStorage.getItem('wallet_address') : null
+    })
+  }, [isConnected, address, showDashboard, demoMode])
+  
+  // Force re-render when address changes
+  useEffect(() => {
+    if (address) {
+      console.log('Address detected, dashboard should show:', address)
+    }
+  }, [address])
+  
+  // Listen for wallet connection event
+  useEffect(() => {
+    const handleWalletConnected = () => {
+      console.log('Wallet connected event received, forcing re-render')
+      // Force component to re-check wallet state
+      const savedAddress = typeof window !== 'undefined' ? localStorage.getItem('wallet_address') : null
+      if (savedAddress) {
+        // Trigger a state update by checking localStorage
+        window.location.reload() // Reload to ensure state is synced
+      }
+    }
+    
+    window.addEventListener('walletConnected', handleWalletConnected)
+    return () => window.removeEventListener('walletConnected', handleWalletConnected)
+  }, [])
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-pink-950 via-rose-950 to-fuchsia-950 relative overflow-hidden">
-      {/* Particle background */}
-      <ParticleBackground />
+    <main className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#d4a5e8] via-[#c28dd9] to-[#a875c7] bg-[length:400%_400%] animate-gradient-slow">
+      {/* Floating Particles Background */}
+      <FloatingParticles />
       
-      {/* Animated background elements with morphing */}
+      {/* Soft floating orbs - flowing light effect */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-pink-500/20 rounded-full blur-3xl animate-float animate-morph"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-rose-500/20 rounded-full blur-3xl animate-float animate-morph" style={{ animationDelay: '2s', animationDuration: '10s' }}></div>
-        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-fuchsia-500/20 rounded-full blur-3xl animate-pulse-slow animate-morph" style={{ animationDuration: '12s' }}></div>
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-pink-400/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '8s' }}></div>
+        <motion.div
+          className="absolute top-10 left-5 w-64 h-64 rounded-full blur-3xl"
+          style={{ backgroundColor: 'rgba(212, 165, 232, 0.3)' }}
+          animate={{
+            y: [0, -30, 0],
+            x: [0, 20, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute bottom-10 right-5 w-80 h-80 rounded-full blur-3xl"
+          style={{ backgroundColor: 'rgba(168, 117, 199, 0.25)' }}
+          animate={{
+            y: [0, 30, 0],
+            x: [0, -25, 0],
+            scale: [1, 1.3, 1],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 2,
+          }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 w-72 h-72 rounded-full blur-3xl"
+          style={{ backgroundColor: 'rgba(194, 141, 217, 0.2)' }}
+          animate={{
+            y: [0, -25, 0],
+            scale: [1, 1.25, 1],
+            rotate: [0, 180, 360],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
       </div>
 
-      <nav className="relative border-b border-pink-900/50 bg-pink-950/30 backdrop-blur-xl z-20 glass-strong">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3 animate-fade-in">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-pink-400 blur-xl opacity-50 group-hover:opacity-75 transition-opacity animate-pulse-ring"></div>
-              <Sparkles className="w-6 h-6 text-pink-400 animate-pulse relative z-10 group-hover:scale-125 transition-transform duration-300" />
-            </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-400 via-rose-400 to-fuchsia-400 bg-clip-text text-transparent animate-gradient-shift relative">
-              DAILYAGI
-              <span className="absolute inset-0 bg-gradient-to-r from-pink-400 via-rose-400 to-fuchsia-400 bg-clip-text text-transparent opacity-0 hover:opacity-100 transition-opacity animate-shimmer"></span>
-            </h1>
-            <span className="text-xs text-pink-300/60 animate-pulse">v1.0</span>
-          </div>
-          <div className="flex items-center gap-3 animate-fade-in">
-            {!showDashboard && (
-              <button
-                onClick={() => setDemoMode(true)}
-                className="group relative flex items-center gap-2 px-4 py-2 bg-pink-900/40 hover:bg-pink-800/60 backdrop-blur-sm border border-pink-800/50 rounded-xl text-pink-200 text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-pink-500/20 overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-500/0 via-white/10 to-rose-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                <Eye className="w-4 h-4 group-hover:scale-110 transition-transform duration-300 relative z-10" />
-                <span className="relative z-10">Demo</span>
-              </button>
-            )}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-xl bg-pink-900/40 hover:bg-pink-800/60 backdrop-blur-sm border border-pink-800/50 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-pink-500/20 hover:rotate-12 relative group"
-              aria-label="Toggle theme"
-            >
-              <div className="absolute inset-0 rounded-xl bg-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse-ring"></div>
-              {theme === 'dark' ? (
-                <Sun className="w-5 h-5 text-pink-300 transition-transform group-hover:rotate-180 duration-500 relative z-10" />
-              ) : (
-                <Moon className="w-5 h-5 text-pink-400 transition-transform group-hover:rotate-180 duration-500 relative z-10" />
-              )}
-            </button>
-            <WalletButton />
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="container mx-auto px-4 py-8 relative z-10">
         {!showDashboard ? (
-          <div className="max-w-4xl mx-auto mt-12 animate-fade-in-up">
+          <div className="max-w-6xl mx-auto">
             {/* Hero Section */}
-            <div className="text-center mb-12">
-              <div className="mb-6 animate-float relative inline-block">
-                <div className="absolute inset-0 bg-pink-400 blur-2xl opacity-50 animate-pulse-ring"></div>
-                <Sparkles className="w-20 h-20 text-pink-400 mx-auto relative z-10 hover:scale-125 transition-transform duration-300" />
-              </div>
-              <h2 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-300 via-rose-300 to-fuchsia-300 bg-clip-text text-transparent animate-gradient-shift">
+            <motion.div
+              className="text-center mb-16 mt-12 hero-backdrop relative"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, ease: 'easeOut' }}
+            >
+              <motion.div
+                className="mb-8 relative inline-block"
+                animate={{ y: [0, -20, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <motion.div
+                  className="absolute inset-0 blur-2xl opacity-40"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.4)' }}
+                  animate={{ opacity: [0.3, 0.5, 0.3], scale: [1, 1.05, 1] }}
+                  transition={{ duration: 5, repeat: Infinity }}
+                />
+                <Sparkles className="w-28 h-28 relative z-10 text-white" style={{ filter: 'drop-shadow(0 2px 12px rgba(255, 255, 255, 0.4))' }} />
+              </motion.div>
+              <motion.h2
+                className="text-7xl md:text-9xl font-bold font-display mb-6 premium-heading relative z-10"
+                data-text="Welcome to DAILYAGI"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, delay: 0.3, ease: 'easeOut' }}
+                style={{
+                  textShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                }}
+              >
                 Welcome to DAILYAGI
-              </h2>
-              <p className="text-pink-200/80 mb-4 text-xl animate-slide-up" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
+              </motion.h2>
+              <motion.p
+                className="text-xl md:text-2xl text-white mb-4 font-light relative z-10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }}
+                style={{
+                  textShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                }}
+              >
                 Your decentralized AI life assistant
-              </p>
-              <p className="text-pink-300/60 text-lg mb-8 animate-slide-up" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
+              </motion.p>
+              <motion.p
+                className="text-lg max-w-2xl mx-auto relative z-10"
+                style={{ color: '#f3e8ff', textShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.7, ease: 'easeOut' }}
+              >
                 Manage reminders, track spending, and organize groceries with AI-powered automation
-              </p>
-            </div>
+              </motion.p>
+              <motion.div
+                className="mt-8 flex items-center justify-center gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.9, ease: 'easeOut' }}
+              >
+                <motion.button
+                  onClick={() => setDemoMode(true)}
+                  className="group relative flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-medium transition-all duration-300 hover:scale-105 overflow-hidden glass border border-white/25"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                  <span className="relative z-10">Try Demo</span>
+                </motion.button>
+              </motion.div>
+            </motion.div>
 
             {/* Feature Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               {[
-                { icon: Bell, title: 'Smart Reminders', desc: 'AI-powered scheduling', color: 'from-pink-500 to-rose-500' },
-                { icon: DollarSign, title: 'Spending Insights', desc: 'Track & analyze expenses', color: 'from-rose-500 to-fuchsia-500' },
-                { icon: ShoppingCart, title: 'Grocery Lists', desc: 'Vision AI shopping assistant', color: 'from-fuchsia-500 to-pink-500' },
+                { icon: Bell, title: 'Smart Reminders', desc: 'AI-powered scheduling and notifications' },
+                { icon: DollarSign, title: 'Spending Insights', desc: 'Track & analyze your expenses' },
+                { icon: ShoppingCart, title: 'Grocery Lists', desc: 'Vision AI shopping assistant' },
               ].map((feature, index) => {
                 const Icon = feature.icon
                 return (
-                  <div
+                  <motion.div
                     key={index}
-                    className="group relative p-6 bg-pink-900/20 backdrop-blur-xl rounded-2xl border border-pink-800/50 hover:border-pink-700/70 transition-all duration-500 hover:shadow-xl hover:shadow-pink-500/20 hover:scale-105 hover-lift animate-fade-in-up"
-                    style={{ animationDelay: `${0.6 + index * 0.1}s`, animationFillMode: 'both' }}
+                    className="group relative p-8 glass-strong rounded-2xl border border-white/25 transition-all duration-500"
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.9 + index * 0.15, ease: 'easeOut' }}
+                    whileHover={{ 
+                      y: -16, 
+                      scale: 1.04,
+                    }}
+                    style={{
+                      boxShadow: '0 16px 64px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                    }}
                   >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-2xl`}></div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-pink-500/0 via-white/5 to-rose-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 rounded-2xl"></div>
+                    <motion.div
+                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                      }}
+                    />
                     <div className="relative z-10">
-                      <div className={`p-3 rounded-xl bg-gradient-to-br ${feature.color} opacity-20 group-hover:opacity-30 mb-4 inline-block group-hover:scale-110 transition-all duration-300`}>
-                        <Icon className="w-6 h-6 text-pink-300" />
-                      </div>
-                      <h3 className="text-xl font-bold text-pink-100 mb-2">{feature.title}</h3>
-                      <p className="text-pink-300/60 text-sm">{feature.desc}</p>
+                      <WaterGlassIcon icon={Icon} size={32} className="mb-6" />
+                      <h3 className="text-2xl font-bold font-display text-white mb-3">{feature.title}</h3>
+                      <p className="text-sm leading-relaxed" style={{ color: '#f3e8ff' }}>{feature.desc}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 )
               })}
             </div>
 
             {/* CTA Section */}
-            <div className="bg-pink-900/20 backdrop-blur-xl rounded-2xl p-8 border border-pink-800/50 shadow-2xl shadow-pink-900/20 hover:border-pink-700/70 transition-all duration-300 hover:shadow-pink-500/30 hover-lift hover-glow group relative overflow-hidden">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-pink-500/0 via-rose-500/10 to-fuchsia-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative z-10 text-center">
-                <h3 className="text-2xl font-bold text-pink-100 mb-4">Ready to get started?</h3>
-                <p className="text-pink-300/60 mb-6">Connect your wallet to unlock the full power of DAILYAGI</p>
+            <motion.div
+              className="glass-strong rounded-3xl p-12 border border-white/25 text-center"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
+              whileHover={{ scale: 1.02, y: -4 }}
+            >
+              <motion.h3
+                className="text-3xl font-bold font-display text-white mb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.6 }}
+              >
+                Ready to get started?
+              </motion.h3>
+              <motion.p
+                className="mb-8 text-lg"
+                style={{ color: '#f3e8ff' }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.7 }}
+              >
+                Connect your wallet to unlock the full power of DAILYAGI
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.8, type: 'spring', stiffness: 200 }}
+              >
                 <WalletButton />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         ) : (
           <>
             {demoMode && !isConnected && (
-              <div className="mb-4 max-w-7xl mx-auto">
-                <div className="bg-pink-900/30 backdrop-blur-xl rounded-xl p-4 border border-pink-800/50 flex items-center justify-between animate-fade-in">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-pink-500/20 rounded-lg">
-                      <Eye className="w-5 h-5 text-pink-400" />
-                    </div>
-                    <div>
-                      <p className="text-pink-100 font-medium">Demo Mode Active</p>
-                      <p className="text-xs text-pink-300/60">You're viewing a preview. Connect your wallet for full functionality.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setDemoMode(false)}
-                      className="px-4 py-2 bg-pink-900/40 hover:bg-pink-800/60 rounded-lg text-pink-200 text-sm transition-all duration-300 border border-pink-800/50"
-                    >
-                      Exit Demo
-                    </button>
-                    <WalletButton />
-                  </div>
-                </div>
+              <DemoBanner onExit={() => setDemoMode(false)} />
+            )}
+            
+            {/* Floating Action Buttons - Bottom Right */}
+            {showDashboard && (
+              <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-3 items-end">
+                {/* Sentient Chat Button */}
+                <motion.a
+                  href="https://sentient.chat/?agent=dailyAGI"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-3 rounded-xl glass-strong border border-white/25 shadow-2xl flex items-center gap-2 text-white font-medium"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(255, 159, 243, 0.3) 0%, rgba(197, 108, 240, 0.3) 100%)',
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.2 }}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span className="text-sm">Sentient</span>
+                </motion.a>
+                
+                {/* Chat Modal Button */}
+                <motion.button
+                  onClick={() => setChatModalOpen(true)}
+                  className="p-4 rounded-full glass-strong border border-white/25 shadow-2xl"
+                  style={{
+                    background: 'linear-gradient(135deg, #ff9ff3 0%, #c56cf0 100%)',
+                    boxShadow: '0 8px 32px rgba(255, 159, 243, 0.4)',
+                  }}
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  whileTap={{ scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1 }}
+                >
+                  <MessageCircle className="w-6 h-6 text-white" />
+                </motion.button>
               </div>
             )}
+            
+            <ChatModal 
+              isOpen={chatModalOpen} 
+              onClose={() => setChatModalOpen(false)}
+              demoMode={demoMode}
+            />
             <Dashboard
               address={demoAddress}
               ensName={demoMode ? 'Demo User' : ensName}
@@ -163,6 +319,32 @@ export default function Home() {
           </>
         )}
       </div>
+      
+      {/* Footer with Sentient Badge */}
+      <footer className="relative z-10 border-t border-white/25 glass-strong mt-12">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-white/70 text-sm">
+              © 2025 dailyAGI. Built with privacy and decentralization in mind.
+            </p>
+            <motion.div
+              className="flex items-center gap-2 text-white/60 text-sm"
+              whileHover={{ scale: 1.05 }}
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Powered by</span>
+              <a
+                href="https://sentient.xyz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/80 hover:text-white transition-colors font-medium"
+              >
+                Sentient AGI
+              </a>
+            </motion.div>
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }

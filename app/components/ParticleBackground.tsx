@@ -32,17 +32,17 @@ export function ParticleBackground() {
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
 
-    // Create particles
+    // Create particles - matching lavender-pink gradient
     const particleCount = 50
-    const colors = ['#ec4899', '#f43f5e', '#d946ef', '#f472b6', '#f9a8d4']
+    const colors = ['#f8d7ff', '#f0bafc', '#c6a4ff', '#ff9ff3', '#c56cf0']
     
     particlesRef.current = Array.from({ length: particleCount }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      size: Math.random() * 3 + 1,
-      speedX: (Math.random() - 0.5) * 0.5,
-      speedY: (Math.random() - 0.5) * 0.5,
-      opacity: Math.random() * 0.5 + 0.2,
+      size: Math.random() * 2 + 0.5,
+      speedX: (Math.random() - 0.5) * 0.3,
+      speedY: (Math.random() - 0.5) * 0.3,
+      opacity: Math.random() * 0.15 + 0.05,
       color: colors[Math.floor(Math.random() * colors.length)],
     }))
 
@@ -68,19 +68,19 @@ export function ParticleBackground() {
         ctx.fill()
         ctx.globalAlpha = 1
 
-        // Draw connections
+        // Draw connections - closer and more transparent
         particlesRef.current.slice(i + 1).forEach((otherParticle) => {
           const dx = particle.x - otherParticle.x
           const dy = particle.y - otherParticle.y
           const distance = Math.sqrt(dx * dx + dy * dy)
 
-          if (distance < 150) {
+          if (distance < 100) {
             ctx.beginPath()
             ctx.moveTo(particle.x, particle.y)
             ctx.lineTo(otherParticle.x, otherParticle.y)
             ctx.strokeStyle = particle.color
-            ctx.globalAlpha = (1 - distance / 150) * 0.2
-            ctx.lineWidth = 1
+            ctx.globalAlpha = (1 - distance / 100) * 0.08
+            ctx.lineWidth = 0.5
             ctx.stroke()
             ctx.globalAlpha = 1
           }

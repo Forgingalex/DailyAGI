@@ -3,6 +3,8 @@
 import { useState, useRef } from 'react'
 import { Upload, ShoppingCart, CheckCircle, Loader } from 'lucide-react'
 import axios from 'axios'
+import { motion } from 'framer-motion'
+import { WaterGlassIcon } from '../WaterGlassIcon'
 
 interface GroceryTabProps {
   address: string | null
@@ -63,17 +65,33 @@ export function GroceryTab({ address }: GroceryTabProps) {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="flex justify-between items-center">
-        <h3 className="text-2xl font-bold bg-gradient-to-r from-pink-300 to-rose-300 bg-clip-text text-transparent">
+        <h3 className="text-2xl font-bold font-display text-white premium-heading relative z-10" data-text="Grocery List" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
           Grocery List
         </h3>
-        <button
+        <motion.button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="group relative flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-xl text-white font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-pink-500/30 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+          className="group relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-medium transition-all duration-300 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+            background: 'linear-gradient(135deg, #ff9ff3 0%, #c56cf0 100%)',
+            boxShadow: '0 4px 20px rgba(255, 159, 243, 0.4)',
+          }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-400/0 via-white/20 to-rose-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
+            initial={{ x: '-100%' }}
+            whileHover={{ x: '100%' }}
+            transition={{ duration: 0.6 }}
+          />
           {uploading ? (
             <>
               <Loader className="w-5 h-5 animate-spin relative z-10" />
@@ -85,7 +103,7 @@ export function GroceryTab({ address }: GroceryTabProps) {
               <span className="relative z-10">Upload Fridge Photo</span>
             </>
           )}
-        </button>
+        </motion.button>
         <input
           ref={fileInputRef}
           type="file"
@@ -97,36 +115,60 @@ export function GroceryTab({ address }: GroceryTabProps) {
 
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mb-4"></div>
-          <p className="text-pink-300/60">Loading grocery list...</p>
+          <motion.div
+            className="inline-block rounded-full h-8 w-8 border-2 border-white/30 border-t-white mb-4"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          />
+          <p className="text-white/70">Loading grocery list...</p>
         </div>
       ) : !list ? (
-        <div className="text-center py-16 bg-pink-900/10 rounded-2xl border-2 border-dashed border-pink-800/50 hover:border-pink-700/70 transition-all duration-300">
-          <div className="mb-6 animate-float">
-            <ShoppingCart className="w-20 h-20 text-pink-400/50 mx-auto" />
-          </div>
-          <p className="text-pink-200/80 mb-2 text-lg font-medium">No grocery list yet</p>
-          <p className="text-sm text-pink-300/60 mb-6">
+        <motion.div
+          className="text-center py-16 glass rounded-2xl border-2 border-dashed border-white/30"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            className="mb-6"
+            animate={{ y: [0, -15, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <ShoppingCart className="w-20 h-20 mx-auto" style={{ color: 'rgba(255, 255, 255, 0.5)', filter: 'drop-shadow(0 0 12px rgba(255, 255, 255, 0.4))' }} />
+          </motion.div>
+          <p className="text-white mb-2 text-lg font-medium">No grocery list yet</p>
+          <p className="text-sm mb-6" style={{ color: '#f3e8ff' }}>
             Upload a photo of your fridge to generate a shopping list
           </p>
-          <button
+          <motion.button
             onClick={() => fileInputRef.current?.click()}
-            className="px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-pink-500/30"
+            className="px-6 py-3 rounded-xl text-white font-medium transition-all duration-300"
+            style={{
+              background: 'linear-gradient(135deg, #ff9ff3 0%, #c56cf0 100%)',
+              boxShadow: '0 4px 20px rgba(255, 159, 243, 0.4)',
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Get Started
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       ) : (
-        <div className="space-y-4 animate-fade-in-up">
-          <div className="bg-pink-900/20 backdrop-blur-xl rounded-xl border border-pink-800/50 p-5 shadow-lg">
+        <motion.div
+          className="space-y-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="glass rounded-xl border border-white/20 p-5">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm text-pink-300/60 mb-1">IPFS CID</p>
-                <p className="text-pink-100 font-mono text-sm">{list.cid}</p>
+                <p className="text-sm text-white/70 mb-1">IPFS CID</p>
+                <p className="text-white font-mono text-sm">{list.cid}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-pink-300/60 mb-1">Created</p>
-                <p className="text-pink-100 text-sm">
+                <p className="text-sm text-white/70 mb-1">Created</p>
+                <p className="text-white text-sm">
                   {new Date(list.timestamp).toLocaleString()}
                 </p>
               </div>
@@ -135,43 +177,53 @@ export function GroceryTab({ address }: GroceryTabProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {list.items.map((item, index) => (
-              <div
+              <motion.div
                 key={index}
-                className="group p-5 bg-pink-900/20 backdrop-blur-xl rounded-xl border border-pink-800/50 hover:border-pink-700/70 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/20 hover:scale-105 animate-fade-in-up hover-lift relative overflow-hidden"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="group p-5 glass rounded-xl border border-white/20 transition-all duration-300"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                style={{
+                  boxShadow: '0 4px 20px rgba(255, 255, 255, 0.1)',
+                }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-500/0 via-rose-500/5 to-fuchsia-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="flex justify-between items-start mb-2 relative z-10">
+                <div className="flex justify-between items-start mb-2">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-pink-100 mb-2 text-lg">
+                    <h4 className="font-semibold text-white mb-2 text-lg">
                       {item.name}
                     </h4>
-                    <p className="text-sm text-pink-300/70 mb-3">
+                    <p className="text-sm text-white/80 mb-3">
                       Quantity: {item.quantity}
                     </p>
-                    <span className="inline-block px-3 py-1 text-xs bg-pink-500/20 text-pink-300 rounded-lg border border-pink-800/50">
+                    <span className="inline-block px-3 py-1 text-xs rounded-lg border border-white/20" style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      color: 'white'
+                    }}>
                       {item.category}
                     </span>
                   </div>
-                  <button
+                  <motion.button
                     onClick={() => markItemComplete(index)}
-                    className="p-2 hover:bg-pink-800/40 rounded-lg transition-all duration-200 hover:scale-110 hover:rotate-12"
+                    className="p-2 rounded-lg transition-all duration-200"
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                    whileHover={{ scale: 1.1, rotate: 12 }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    <CheckCircle className="w-5 h-5 text-green-400" />
-                  </button>
+                    <CheckCircle className="w-5 h-5 text-white" />
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
 
           {list.items.length === 0 && (
-            <div className="text-center py-12 bg-pink-900/10 rounded-2xl border border-pink-800/30">
-              <p className="text-pink-300/60">No items in the list</p>
+            <div className="text-center py-12 glass rounded-2xl border border-white/20">
+              <p className="text-white/70">No items in the list</p>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   )
 }
-

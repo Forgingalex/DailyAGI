@@ -1,46 +1,167 @@
 {
-  "project_name": "DAILYAGI",
-  "description": "A decentralized AI life assistant built with Sentient ROMA and Dobby. It handles reminders, spending nudges, and grocery lists, all stored on IPFS and executed privately via Enclaves.",
-  "author": "Hosea Adetunji",
+  "project_name": "dailyAGI",
+  "slug": "dailyagi",
+  "version": "0.1.0",
+  "description": "dailyAGI is a decentralized AI life assistant built on the Sentient AGI stack. It handles reminders, spending insights, and grocery automation while keeping user data private and user-owned on IPFS.",
+  "author": {
+    "name": "Hosea Adetunji",
+    "handle": "Forgingalex",
+    "contact_email": "change-me@example.com"
+  },
+  "repository": "https://github.com/Forgingalex/DailyAGI",
+  "license": "MIT",
   "category": "AI Agents",
-  "language": ["TypeScript", "Python"],
-  "blockchain": ["Polygon", "Base"],
+  "languages": ["TypeScript", "Python"],
+  "blockchains": ["Polygon", "Base"],
   "agents": [
     {
       "name": "RemindersAgent",
-      "purpose": "Send calendar-based reminders via SMS",
-      "dependencies": ["google-api-python-client", "twilio", "web3-storage"],
+      "id": "reminders-agent",
+      "version": "0.1.0",
+      "purpose": "Scan calendars, detect important events and routines, and deliver reminders via Sentient Chat and SMS.",
+      "entry_point": "/sentient/agent",
+      "dependencies": [
+        "google-api-python-client",
+        "twilio",
+        "web3-storage",
+        "roma-sentient",
+        "transformers",
+        "sentient-agent-framework"
+      ],
+      "input_schema": {
+        "message": "string",
+        "wallet": "string",
+        "options": {
+          "phone": "string (optional)",
+          "calendar_scope": "string (optional)"
+        }
+      },
+      "output_schema": {
+        "events": "stream of sentient.agent.event objects",
+        "final_message": "string",
+        "ipfs_cid": "string (optional)"
+      },
       "oml_fingerprint": "dailyagi_reminders_v1_0xabcdef1234567890"
     },
     {
       "name": "SpendingAgent",
-      "purpose": "Analyze on-chain transactions and nudge users on overspending",
-      "dependencies": ["requests", "transformers", "roma-sentient"],
+      "id": "spending-agent",
+      "version": "0.1.0",
+      "purpose": "Analyze on-chain wallet activity, categorize spends, and provide actionable nudges and charts.",
+      "entry_point": "/sentient/agent",
+      "dependencies": [
+        "requests",
+        "covalent",
+        "roma-sentient",
+        "transformers",
+        "web3-storage",
+        "sentient-agent-framework"
+      ],
+      "input_schema": {
+        "message": "string",
+        "wallet": "string",
+        "options": {
+          "time_range": "string (e.g., 30d)",
+          "thresholds": "object (optional)"
+        }
+      },
+      "output_schema": {
+        "events": "stream of sentient.agent.event objects",
+        "final_message": "string",
+        "spending_summary_ipfs_cid": "string (optional)"
+      },
       "oml_fingerprint": "dailyagi_spending_v1_0x7890abcdef123456"
     },
     {
       "name": "GroceryAgent",
-      "purpose": "Use vision to detect missing grocery items and create IPFS lists",
-      "dependencies": ["exa", "web3-storage", "roma-sentient"],
+      "id": "grocery-agent",
+      "version": "0.1.0",
+      "purpose": "Process fridge photos, detect missing items with vision, and generate IPFS-hosted shopping lists.",
+      "entry_point": "/sentient/agent",
+      "dependencies": [
+        "exa-vision",
+        "web3-storage",
+        "roma-sentient",
+        "transformers",
+        "sentient-agent-framework"
+      ],
+      "input_schema": {
+        "message": "string",
+        "wallet": "string",
+        "options": {
+          "image_base64": "string (optional)",
+          "image_url": "string (optional)"
+        }
+      },
+      "output_schema": {
+        "events": "stream of sentient.agent.event objects",
+        "final_message": "string",
+        "grocery_list_ipfs_cid": "string"
+      },
       "oml_fingerprint": "dailyagi_grocery_v1_0x4567890abcdef123"
+    },
+    {
+      "name": "LifeOSAgent",
+      "id": "meta-agent",
+      "version": "0.1.0",
+      "purpose": "ROMA orchestrator that routes user intents to appropriate sub-agents (Reminders, Spending, Grocery).",
+      "entry_point": "/sentient/agent",
+      "dependencies": [
+        "sentient-agent-framework",
+        "roma-sentient",
+        "transformers"
+      ],
+      "input_schema": {
+        "message": "string",
+        "wallet": "string"
+      },
+      "output_schema": {
+        "events": "stream of sentient.agent.event objects",
+        "final_message": "string"
+      },
+      "oml_fingerprint": "dailyagi_meta_v1_0x1234567890abcdef"
     }
   ],
   "deployment": {
-    "frontend": "Vercel",
-    "backend": "Render",
-    "storage": "IPFS",
-    "enclave": "Sentient Enclave (mock)"
+    "frontend": {
+      "platform": "Vercel",
+      "url": "https://your-dailyagi-frontend.vercel.app"
+    },
+    "backend": {
+      "platform": "Render",
+      "url": "https://your-dailyagi-backend.onrender.com"
+    },
+    "storage": "IPFS (web3.storage)",
+    "enclave": "Sentient Enclave (mock in MVP, replace with real enclave URI after integration)"
   },
   "monetization": {
-    "token": "SENT",
-    "model": "Freemium",
-    "premium_price": "0.01 SENT/month",
-    "royalty": "0.05%"
+    "model": "Freemium + SENT staking + usage fees",
+    "premium_stake": "0.01 SENT per month (unlock premium features)",
+    "usage_fee": "0.001 SENT per advanced invocation (suggested)",
+    "oml_royalty_rate": "0.05%"
   },
-  "repository": "https://github.com/Forgingalex/DailyAGI.git",
-  "license": "MIT",
-  "version": "1.0.0",
-  "created_at": "2025-01-27T00:00:00Z"
+  "integration": {
+    "sentient_agent_framework": {
+      "version": ">=0.1.0",
+      "usage": "Used for /sentient/agent endpoint with SSE streaming",
+      "endpoint": "/sentient/agent",
+      "event_types": ["start", "progress", "message", "end"]
+    },
+    "usage_tracking": {
+      "status": "placeholder",
+      "note": "Usage tracking API endpoint TBD. Currently logs internally. Will integrate with Sentient usage backend when available.",
+      "implementation": "backend/usage_tracking.py"
+    },
+    "roma_orchestration": {
+      "implementation": "backend/agents/meta_agent.py",
+      "note": "LifeOSAgent (MetaAgent) handles intent detection and agent routing"
+    }
+  },
+  "contact": {
+    "website": "https://github.com/Forgingalex/DailyAGI",
+    "email": "change-me@example.com",
+    "twitter": "@Forgingalex"
+  },
+  "tags": ["reminders", "spending", "grocery", "privacy", "sentient", "roma", "dobby", "ipfs"],
+  "notes": "Replace all OML fingerprint placeholders with actual fingerprints generated during OML signing. Update deployment URLs and contact email before submitting to GRID. Usage tracking endpoints are placeholders until Sentient Foundation releases public API documentation."
 }
-
-

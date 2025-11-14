@@ -39,15 +39,38 @@ DAILYAGI/
 │   ├── hooks/            # Custom hooks
 │   └── utils/            # Utilities
 ├── backend/              # FastAPI backend
+│   ├── agent_server.py   # Sentient Agent API server
 │   ├── agents/           # AI agents
+│   │   ├── meta_agent.py # ROMA orchestrator
 │   │   ├── reminders.py
 │   │   ├── spending.py
 │   │   └── grocery.py
+│   ├── usage_tracking.py # Usage logging
 │   └── utils/            # Helper utilities
 ├── contracts/            # Smart contracts
 │   └── SENTStaking.sol
 └── grid_manifest.json    # Sentient GRID metadata
 ```
+
+## 🔗 Sentient Chat Integration
+
+dailyAGI is fully integrated with **Sentient Chat** via the official Sentient-Agent-Framework.
+
+### Features:
+- ✅ SSE streaming endpoint (`/sentient/agent`)
+- ✅ ROMA-based multi-agent orchestration
+- ✅ Intent detection and routing
+- ✅ Usage tracking for monetization
+- ✅ OML compliance ready
+
+### Running the Sentient Agent Server:
+
+```bash
+cd backend
+python agent_server.py
+```
+
+See `backend/README_SENTIENT.md` for detailed integration documentation.
 
 ## 🚀 Quick Start
 
