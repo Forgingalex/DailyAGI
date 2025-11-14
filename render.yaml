@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: dailyagi-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn main:socket_app --host 0.0.0.0 --port $PORT
+    rootDir: backend
+    envVars:
+      - key: HF_TOKEN
+        sync: false
+      - key: TWILIO_SID
+        sync: false
+      - key: TWILIO_TOKEN
+        sync: false
+      - key: COVALENT_KEY
+        sync: false
+      - key: EXA_KEY
+        sync: false
+      - key: SENTIENT_KEY
+        sync: false
+      - key: WEB3_STORAGE_TOKEN
+        sync: false
+
+  - type: web
+    name: dailyagi-agent-server
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && python agent_server.py
+    rootDir: backend
+    envVars:
+      - key: SENTIENT_AGENT_PORT
+        value: $PORT
+      - key: SENTIENT_AGENT_HOST
+        value: 0.0.0.0
+      - key: HF_TOKEN
+        sync: false
+      - key: TWILIO_SID
+        sync: false
+      - key: TWILIO_TOKEN
+        sync: false
+      - key: COVALENT_KEY
+        sync: false
+      - key: EXA_KEY
+        sync: false
+      - key: SENTIENT_KEY
+        sync: false
+      - key: WEB3_STORAGE_TOKEN
+        sync: false
+

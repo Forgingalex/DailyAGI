@@ -5,7 +5,9 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "env": {
-    "NEXT_PUBLIC_API_URL": "@api_url"
+    "NEXT_PUBLIC_API_URL": "@api_url",
+    "NEXT_PUBLIC_AGENT_URL": "@agent_url",
+    "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID": "@walletconnect_id"
   }
 }
 

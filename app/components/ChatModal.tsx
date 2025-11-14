@@ -46,7 +46,7 @@ export function ChatModal({ isOpen, onClose, demoMode = false }: ChatModalProps)
 
     try {
       await streamSSE(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'}/sentient/agent`,
+        `${process.env.NEXT_PUBLIC_AGENT_URL || 'http://localhost:8001'}/sentient/agent`,
         {
           message: userMessage,
           wallet: walletAddress,
