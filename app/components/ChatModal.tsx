@@ -99,7 +99,7 @@ export function ChatModal({ isOpen, onClose, demoMode = false }: ChatModalProps)
             onClick={onClose}
           />
           <motion.div
-            className="fixed bottom-20 right-4 w-full max-w-md h-[600px] glass-strong rounded-2xl border border-white/25 z-50 flex flex-col shadow-2xl"
+            className="fixed inset-0 md:inset-auto md:bottom-20 md:right-4 md:w-full md:max-w-md md:h-[600px] md:rounded-2xl glass-strong border border-white/25 z-50 flex flex-col shadow-2xl"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}

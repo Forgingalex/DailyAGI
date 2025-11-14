@@ -60,7 +60,7 @@ export function Dashboard({ address, ensName, avatar }: DashboardProps) {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-5xl font-bold font-display text-white mb-2 premium-heading relative z-10" data-text={`Welcome back${ensName ? `, ${ensName}` : ''}!`} style={{ textShadow: '0 2px 12px rgba(0, 0, 0, 0.1)' }}>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display text-white mb-2 premium-heading relative z-10" data-text={`Welcome back${ensName ? `, ${ensName}` : ''}!`} style={{ textShadow: '0 2px 12px rgba(0, 0, 0, 0.1)' }}>
               Welcome back{ensName ? `, ${ensName}` : ''}!
             </h2>
             <p className="text-lg relative z-10" style={{ color: '#f3e8ff', textShadow: '0 1px 6px rgba(0, 0, 0, 0.08)' }}>

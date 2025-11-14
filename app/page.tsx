@@ -137,7 +137,7 @@ export default function Home() {
                 <Sparkles className="w-28 h-28 relative z-10 text-white" style={{ filter: 'drop-shadow(0 2px 12px rgba(255, 255, 255, 0.4))' }} />
               </motion.div>
               <motion.h2
-                className="text-7xl md:text-9xl font-bold font-display mb-6 premium-heading relative z-10"
+                className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-bold font-display mb-6 premium-heading relative z-10"
                 data-text="Welcome to DAILYAGI"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -149,7 +149,7 @@ export default function Home() {
                 Welcome to DAILYAGI
               </motion.h2>
               <motion.p
-                className="text-xl md:text-2xl text-white mb-4 font-light relative z-10"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl text-white mb-4 font-light relative z-10 px-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }}
@@ -160,7 +160,7 @@ export default function Home() {
                 Your decentralized AI life assistant
               </motion.p>
               <motion.p
-                className="text-lg max-w-2xl mx-auto relative z-10"
+                className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto relative z-10 px-4"
                 style={{ color: '#f3e8ff', textShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -216,9 +216,9 @@ export default function Home() {
                       }}
                     />
                     <div className="relative z-10">
-                      <WaterGlassIcon icon={Icon} size={32} className="mb-6" />
-                      <h3 className="text-2xl font-bold font-display text-white mb-3">{feature.title}</h3>
-                      <p className="text-sm leading-relaxed" style={{ color: '#f3e8ff' }}>{feature.desc}</p>
+                      <WaterGlassIcon icon={Icon} size={32} className="mb-4 sm:mb-6" />
+                      <h3 className="text-xl sm:text-2xl font-bold font-display text-white mb-2 sm:mb-3">{feature.title}</h3>
+                      <p className="text-xs sm:text-sm leading-relaxed" style={{ color: '#f3e8ff' }}>{feature.desc}</p>
                     </div>
                   </motion.div>
                 )
@@ -227,14 +227,14 @@ export default function Home() {
 
             {/* CTA Section */}
             <motion.div
-              className="glass-strong rounded-3xl p-12 border border-white/25 text-center"
+              className="glass-strong rounded-3xl p-6 sm:p-8 md:p-12 border border-white/25 text-center"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.4 }}
               whileHover={{ scale: 1.02, y: -4 }}
             >
               <motion.h3
-                className="text-3xl font-bold font-display text-white mb-4"
+                className="text-2xl sm:text-3xl font-bold font-display text-white mb-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.6 }}
@@ -242,7 +242,7 @@ export default function Home() {
                 Ready to get started?
               </motion.h3>
               <motion.p
-                className="mb-8 text-lg"
+                className="mb-6 sm:mb-8 text-base sm:text-lg px-4"
                 style={{ color: '#f3e8ff' }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -267,7 +267,7 @@ export default function Home() {
             
             {/* Floating Action Buttons - Bottom Right */}
             {showDashboard && (
-              <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-3 items-end">
+              <div className="fixed bottom-20 md:bottom-8 right-4 md:right-8 z-40 flex flex-col gap-3 items-end">
                 {/* Sentient Chat Button */}
                 <motion.a
                   href="https://sentient.chat/?agent=dailyAGI"

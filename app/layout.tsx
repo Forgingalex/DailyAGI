@@ -8,6 +8,11 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'DAILYAGI - Decentralized AI Life Assistant',
   description: 'AI agent for reminders, spending, and grocery automation on Web3',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+  },
 }
 
 export default function RootLayout({

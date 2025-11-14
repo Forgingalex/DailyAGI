@@ -27,7 +27,7 @@ export function Navbar() {
             <Sparkles className="w-6 h-6 relative z-10 text-white group-hover:scale-125 transition-transform duration-300" style={{ filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.6))' }} />
           </div>
           <motion.h1
-            className="text-3xl font-bold font-display premium-heading"
+            className="text-xl sm:text-2xl md:text-3xl font-bold font-display premium-heading"
             data-text="DAILYAGI"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
