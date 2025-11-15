@@ -9,25 +9,53 @@ import pydantic_ulid_patch  # noqa: F401
 import os
 import logging
 
-# Try importing from sentient_agent_framework - handle different API versions
-try:
-    from sentient_agent_framework import (
-        AbstractAgent,
-        DefaultServer,
-        Session,
-        Query,
-        ResponseHandler
-    )
-except ImportError:
-    # Try alternative import paths
+# Import from sentient_agent_framework - check what's actually available
+# The API may vary by version, so we'll inspect and use what's available
+import sentient_agent_framework as saf
+
+# Check what's available in the package
+if hasattr(saf, 'AbstractAgent'):
+    AbstractAgent = saf.AbstractAgent
+elif hasattr(saf, 'Agent'):
+    AbstractAgent = saf.Agent
+else:
+    # Try importing from submodules
     try:
-        from sentient_agent_framework.interface import AbstractAgent, Session, Query, ResponseHandler
-        from sentient_agent_framework.implementation import DefaultServer
+        from sentient_agent_framework.interface.agent import AbstractAgent
     except ImportError:
-        # Try another path
-        from sentient_agent_framework.agent import AbstractAgent
-        from sentient_agent_framework.server import DefaultServer
-        from sentient_agent_framework.types import Session, Query, ResponseHandler
+        try:
+            from sentient_agent_framework.agent import AbstractAgent
+        except ImportError:
+            raise ImportError("Could not find AbstractAgent in sentient_agent_framework")
+
+# Import other classes similarly
+DefaultServer = getattr(saf, 'DefaultServer', None)
+if not DefaultServer:
+    try:
+        from sentient_agent_framework.implementation.default_server import DefaultServer
+    except ImportError:
+        try:
+            from sentient_agent_framework.server import DefaultServer
+        except ImportError:
+            raise ImportError("Could not find DefaultServer in sentient_agent_framework")
+
+Session = getattr(saf, 'Session', None)
+Query = getattr(saf, 'Query', None)
+ResponseHandler = getattr(saf, 'ResponseHandler', None)
+
+# If not in main module, try submodules
+if not Session:
+    try:
+        from sentient_agent_framework.interface import Session, Query, ResponseHandler
+    except ImportError:
+        try:
+            from sentient_agent_framework.types import Session, Query, ResponseHandler
+        except ImportError:
+            # Use generic types if not found
+            from typing import Any
+            Session = Any
+            Query = Any
+            ResponseHandler = Any
 
 from agents.meta_agent import LifeOSAgent
 from usage_tracking import log_agent_invocation, calculate_usage_cost
