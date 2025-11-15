@@ -147,7 +147,7 @@ export default function SpendingPage() {
                     <span className="text-white/70 text-sm">Top Category</span>
                   </div>
                   <p className="text-3xl font-bold text-white">
-                    {Object.entries(data.categories || {}).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A'}
+                    {Object.entries(data.categories || {}).sort((a, b) => (b[1] as number) - (a[1] as number))[0]?.[0] || 'N/A'}
                   </p>
                 </motion.div>
                 <motion.div
