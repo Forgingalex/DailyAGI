@@ -1,6 +1,7 @@
 """
 Sentient Agent Server for dailyAGI
-Uses Sentient-Agent-Framework to expose /sentient/agent endpoint for Sentient Chat
+Simple FastAPI server that exposes /sentient/agent endpoint for Sentient Chat
+This is a standalone server that doesn't rely on sentient-agent-framework's AbstractAgent
 """
 
 # IMPORTANT: Import Pydantic ULID patch BEFORE sentient_agent_framework
@@ -8,54 +9,12 @@ import pydantic_ulid_patch  # noqa: F401
 
 import os
 import logging
-
-# Import from sentient_agent_framework - check what's actually available
-# The API may vary by version, so we'll inspect and use what's available
-import sentient_agent_framework as saf
-
-# Check what's available in the package
-if hasattr(saf, 'AbstractAgent'):
-    AbstractAgent = saf.AbstractAgent
-elif hasattr(saf, 'Agent'):
-    AbstractAgent = saf.Agent
-else:
-    # Try importing from submodules
-    try:
-        from sentient_agent_framework.interface.agent import AbstractAgent
-    except ImportError:
-        try:
-            from sentient_agent_framework.agent import AbstractAgent
-        except ImportError:
-            raise ImportError("Could not find AbstractAgent in sentient_agent_framework")
-
-# Import other classes similarly
-DefaultServer = getattr(saf, 'DefaultServer', None)
-if not DefaultServer:
-    try:
-        from sentient_agent_framework.implementation.default_server import DefaultServer
-    except ImportError:
-        try:
-            from sentient_agent_framework.server import DefaultServer
-        except ImportError:
-            raise ImportError("Could not find DefaultServer in sentient_agent_framework")
-
-Session = getattr(saf, 'Session', None)
-Query = getattr(saf, 'Query', None)
-ResponseHandler = getattr(saf, 'ResponseHandler', None)
-
-# If not in main module, try submodules
-if not Session:
-    try:
-        from sentient_agent_framework.interface import Session, Query, ResponseHandler
-    except ImportError:
-        try:
-            from sentient_agent_framework.types import Session, Query, ResponseHandler
-        except ImportError:
-            # Use generic types if not found
-            from typing import Any
-            Session = Any
-            Query = Any
-            ResponseHandler = Any
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Optional, Dict, Any
+import json
 
 from agents.meta_agent import LifeOSAgent
 from usage_tracking import log_agent_invocation, calculate_usage_cost
@@ -63,124 +22,112 @@ from usage_tracking import log_agent_invocation, calculate_usage_cost
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Create FastAPI app
+app = FastAPI(title="dailyAGI Sentient Agent Server")
 
-class DailyAGIAgent(AbstractAgent):
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize MetaAgent
+meta_agent = LifeOSAgent()
+agent_id = "dailyagi"
+version = "0.1.0"
+
+
+class AgentRequest(BaseModel):
+    """Request model for Sentient Chat"""
+    message: str
+    wallet: str
+    metadata: Optional[Dict[str, Any]] = None
+
+
+async def generate_response(message: str, wallet: str):
     """
-    dailyAGI Agent for Sentient Chat integration.
-    
-    This agent:
-    - Receives queries from Sentient Chat
-    - Routes to LifeOSAgent (MetaAgent) for ROMA orchestration
-    - Streams progress events via ResponseHandler
-    - Logs usage for monetization
+    Generate streaming response for Sentient Chat.
+    Yields SSE-formatted events.
     """
+    try:
+        # Emit start event
+        yield f"data: {json.dumps({'type': 'START', 'content': 'dailyAGI is processing your request…'})}\n\n"
+        
+        # Run MetaAgent with progress tracking
+        async for progress_step in meta_agent.run_with_progress(message, wallet):
+            yield f"data: {json.dumps({'type': 'PROGRESS', 'content': progress_step})}\n\n"
+        
+        # Get final answer
+        final_answer = await meta_agent.handle_task(message, wallet)
+        
+        # Emit final message
+        yield f"data: {json.dumps({'type': 'MESSAGE', 'content': final_answer})}\n\n"
+        
+        # Log usage
+        is_premium = False  # Placeholder - check staking contract
+        intent = meta_agent.detect_intent(message)
+        agent_type = intent.get("agent_type", "unknown")
+        cost = calculate_usage_cost(agent_type, is_premium)
+        
+        log_agent_invocation(
+            wallet_address=wallet,
+            agent_id=agent_id,
+            version=version,
+            cost=cost,
+            agent_type=agent_type
+        )
+        
+        # Complete
+        yield f"data: {json.dumps({'type': 'DONE', 'content': ''})}\n\n"
+        
+    except Exception as e:
+        logger.error(f"Error processing request: {e}", exc_info=True)
+        yield f"data: {json.dumps({'type': 'ERROR', 'content': f'An error occurred: {str(e)}'})}\n\n"
+
+
+@app.post("/sentient/agent")
+async def sentient_agent(request: AgentRequest):
+    """
+    Main endpoint for Sentient Chat integration.
+    Accepts POST requests with message and wallet, streams SSE responses.
+    """
+    if not request.wallet:
+        raise HTTPException(status_code=400, detail="Wallet address is required")
     
-    def __init__(self):
-        super().__init__(name="dailyAGI")
-        self.meta_agent = LifeOSAgent()
-        self.agent_id = "dailyagi"
-        self.version = "0.1.0"
+    logger.info(f"Processing request from wallet {request.wallet}: {request.message}")
     
-    async def assist(
-        self,
-        session: Session,
-        query: Query,
-        response_handler: ResponseHandler
-    ):
-        """
-        Main assist method called by Sentient framework.
-        
-        Args:
-            session: User session context
-            query: User's query with message and metadata
-            response_handler: Handler for streaming responses
-        """
-        # Extract wallet and message from query
-        wallet = query.metadata.get("wallet") if query.metadata else None
-        user_input = query.prompt if hasattr(query, "prompt") else str(query)
-        
-        # Fallback: try to get wallet from query content if not in metadata
-        if not wallet:
-            # In some implementations, wallet might be in query content
-            wallet = getattr(query, "wallet", None)
-        
-        if not wallet:
-            await response_handler.emit_text_block(
-                "ERROR",
-                "Wallet address is required. Please connect your wallet."
-            )
-            await response_handler.complete()
-            return
-        
-        logger.info(f"Processing request from wallet {wallet}: {user_input}")
-        
-        try:
-            # Emit start event
-            await response_handler.emit_text_block(
-                "START",
-                "dailyAGI is processing your request…"
-            )
-            
-            # Run MetaAgent with progress tracking
-            async for progress_step in self.meta_agent.run_with_progress(
-                user_input,
-                wallet
-            ):
-                await response_handler.emit_text_block(
-                    "PROGRESS",
-                    progress_step
-                )
-            
-            # Get final answer
-            final_answer = await self.meta_agent.handle_task(user_input, wallet)
-            
-            # Emit final message
-            await response_handler.emit_text_block(
-                "MESSAGE",
-                final_answer
-            )
-            
-            # Log usage (placeholder for Sentient usage API)
-            # TODO: Check if user has premium (staked SENT)
-            is_premium = False  # Placeholder - check staking contract
-            intent = self.meta_agent.detect_intent(user_input)
-            agent_type = intent.get("agent_type", "unknown")
-            cost = calculate_usage_cost(agent_type, is_premium)
-            
-            log_agent_invocation(
-                wallet_address=wallet,
-                agent_id=self.agent_id,
-                version=self.version,
-                cost=cost,
-                agent_type=agent_type
-            )
-            
-            # Complete the stream
-            await response_handler.complete()
-            
-        except Exception as e:
-            logger.error(f"Error processing request: {e}", exc_info=True)
-            await response_handler.emit_text_block(
-                "ERROR",
-                f"An error occurred: {str(e)}"
-            )
-            await response_handler.complete()
+    return StreamingResponse(
+        generate_response(request.message, request.wallet),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        }
+    )
+
+
+@app.get("/health")
+async def health():
+    """Health check endpoint"""
+    return {"status": "ok", "agent": agent_id, "version": version}
 
 
 def main():
     """Run the Sentient agent server"""
-    agent = DailyAGIAgent()
+    import uvicorn
     
-    # Get port from environment or default to 8001 (to avoid conflict with FastAPI)
+    # Get port from environment or default to 8001
     port = int(os.getenv("SENTIENT_AGENT_PORT", 8001))
     host = os.getenv("SENTIENT_AGENT_HOST", "0.0.0.0")
     
     logger.info(f"Starting dailyAGI Sentient Agent Server on {host}:{port}")
     
-    server = DefaultServer(agent, host=host, port=port)
-    server.run()
+    uvicorn.run(app, host=host, port=port)
 
 
 if __name__ == "__main__":
     main()
-
