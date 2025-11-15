@@ -2,13 +2,12 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Upload, ShoppingCart, CheckCircle, Loader, ExternalLink } from 'lucide-react'
+import { Upload, ShoppingCart, CheckCircle, Loader, ExternalLink, Bell, DollarSign } from 'lucide-react'
 import axios from 'axios'
 import { WaterGlassIcon } from '../components/WaterGlassIcon'
 import { useWallet } from '../hooks/useWallet'
 import { Navbar } from '../components/Navbar'
 import { BottomTabs } from '../components/BottomTabs'
-import { Bell, ShoppingCart, DollarSign } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 interface GroceryItem {
