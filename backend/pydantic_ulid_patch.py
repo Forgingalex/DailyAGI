@@ -14,13 +14,16 @@ def __get_pydantic_core_schema__(
     """
     Add Pydantic support for ULID type.
     """
+    def validate_ulid(value):
+        if isinstance(value, ULID):
+            return value
+        if isinstance(value, str):
+            return ULID.from_str(value)
+        return ULID(value)
+    
     return core_schema.no_info_after_validator_function(
-        lambda x: ULID(x) if not isinstance(x, ULID) else x,
+        validate_ulid,
         core_schema.str_schema(),
-        serialization=core_schema.to_ser_schema(
-            core_schema.str_schema(),
-            lambda x: str(x),
-        ),
     )
 
 
