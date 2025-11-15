@@ -8,13 +8,26 @@ import pydantic_ulid_patch  # noqa: F401
 
 import os
 import logging
-from sentient_agent_framework import (
-    AbstractAgent,
-    DefaultServer,
-    Session,
-    Query,
-    ResponseHandler
-)
+
+# Try importing from sentient_agent_framework - handle different API versions
+try:
+    from sentient_agent_framework import (
+        AbstractAgent,
+        DefaultServer,
+        Session,
+        Query,
+        ResponseHandler
+    )
+except ImportError:
+    # Try alternative import paths
+    try:
+        from sentient_agent_framework.interface import AbstractAgent, Session, Query, ResponseHandler
+        from sentient_agent_framework.implementation import DefaultServer
+    except ImportError:
+        # Try another path
+        from sentient_agent_framework.agent import AbstractAgent
+        from sentient_agent_framework.server import DefaultServer
+        from sentient_agent_framework.types import Session, Query, ResponseHandler
 
 from agents.meta_agent import LifeOSAgent
 from usage_tracking import log_agent_invocation, calculate_usage_cost
