@@ -3,6 +3,9 @@ Sentient Agent Server for dailyAGI
 Uses Sentient-Agent-Framework to expose /sentient/agent endpoint for Sentient Chat
 """
 
+# IMPORTANT: Import Pydantic ULID patch BEFORE sentient_agent_framework
+import pydantic_ulid_patch  # noqa: F401
+
 import os
 import logging
 from sentient_agent_framework import (
