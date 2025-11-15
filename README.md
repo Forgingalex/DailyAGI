@@ -70,87 +70,36 @@ cd backend
 python agent_server.py
 ```
 
-See `backend/README_SENTIENT.md` for detailed integration documentation.
+See [Sentient Integration Guide](./docs/SENTIENT_INTEGRATION.md) for detailed integration documentation.
 
 ## 🚀 Quick Start
 
-### Prerequisites
+See [Setup Guide](./docs/SETUP.md) for detailed installation instructions.
 
-- Node.js 18+ and npm
-- Python 3.10+
-- WalletConnect Project ID
-- API keys (see `.env.example`)
-
-### Installation
-
-1. **Clone the repository**
+**Quick commands:**
 ```bash
+# Clone and install
 git clone https://github.com/Forgingalex/DailyAGI.git
 cd DailyAGI
-```
-
-2. **Install frontend dependencies**
-```bash
 npm install
-```
+cd backend && pip install -r requirements.txt && cd ..
 
-3. **Install backend dependencies**
-```bash
-cd backend
-pip install -r requirements.txt
-```
+# Start servers
+cd backend && python main.py &  # Terminal 1
+cd backend && python agent_server.py &  # Terminal 2
+npm run dev  # Terminal 3
 
-4. **Set up environment variables**
-```bash
-cp .env.example .env
-# Edit .env with your API keys
-```
-
-5. **Start the development servers**
-
-**Backend (Terminal 1):**
-```bash
-cd backend
-python main.py
-# Or: uvicorn main:socket_app --reload --host 0.0.0.0 --port 8000
-```
-
-**Frontend (Terminal 2):**
-```bash
-npm run dev
-```
-
-6. **Open your browser**
-```
-http://localhost:3000
+# Open http://localhost:3000
 ```
 
 ## 📦 Deployment
 
-### Frontend (Vercel)
+See [Deployment Guide](./docs/DEPLOYMENT.md) for complete production deployment instructions.
 
-1. Push to GitHub
-2. Import project in Vercel
-3. Add environment variables
-4. Deploy
-
-### Backend (Render)
-
-1. Create new Web Service
-2. Connect GitHub repository
-3. Set build command: `pip install -r requirements.txt`
-4. Set start command: `uvicorn main:socket_app --host 0.0.0.0 --port $PORT`
-5. Add environment variables
-6. Deploy
-
-### Smart Contracts
-
-```bash
-cd contracts
-npm install
-npx hardhat compile
-npx hardhat run scripts/deploy.js --network mumbai
-```
+**Quick overview:**
+- **Frontend**: Deploy to Netlify or Vercel
+- **Backend**: Deploy to Render using `render.yaml`
+- **Agent Server**: Deploy to Render (separate service)
 
 ## 🔑 Environment Variables
 
@@ -184,15 +133,21 @@ cd contracts
 npx hardhat test
 ```
 
-## 📚 API Documentation
+## 📚 Documentation
 
-### Agent Endpoints
+- [Setup Guide](./docs/SETUP.md) - Installation and local development
+- [Deployment Guide](./docs/DEPLOYMENT.md) - Production deployment
+- [Architecture](./docs/ARCHITECTURE.md) - System design and architecture
+- [Sentient Integration](./docs/SENTIENT_INTEGRATION.md) - Sentient Chat integration
+
+### API Endpoints
 
 - `POST /agent/run` - ROMA orchestration endpoint
 - `GET /agent/reminders` - Get reminders
 - `POST /agent/reminders` - Create reminder
 - `POST /agent/spending` - Analyze spending
 - `POST /agent/grocery` - Process grocery image
+- `POST /sentient/agent` - Sentient Chat endpoint (SSE streaming)
 - `GET /health` - Health check
 
 See `backend/main.py` for full API documentation.
