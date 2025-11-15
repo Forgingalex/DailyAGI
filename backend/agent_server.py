@@ -120,8 +120,13 @@ def main():
     """Run the Sentient agent server"""
     import uvicorn
     
-    # Get port from environment or default to 8001
-    port = int(os.getenv("SENTIENT_AGENT_PORT", 8001))
+    # Get port from environment - Render provides PORT, fallback to SENTIENT_AGENT_PORT or 8001
+    port_str = os.getenv("PORT") or os.getenv("SENTIENT_AGENT_PORT", "8001")
+    # Handle case where SENTIENT_AGENT_PORT might be set to literal "$PORT"
+    if port_str == "$PORT":
+        port_str = os.getenv("PORT", "8001")
+    port = int(port_str)
+    
     host = os.getenv("SENTIENT_AGENT_HOST", "0.0.0.0")
     
     logger.info(f"Starting dailyAGI Sentient Agent Server on {host}:{port}")
