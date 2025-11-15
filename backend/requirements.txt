@@ -21,4 +21,5 @@ Pillow>=10.2.0
 python-socketio[asyncio-client]==5.10.0
 sentient-agent-framework>=0.1.0
 ulid-py>=1.1.0
+cuid2>=0.1.0
 
